@@ -17,3 +17,4 @@ styles.css
 data.json
 
 .DS_Store
+.env
