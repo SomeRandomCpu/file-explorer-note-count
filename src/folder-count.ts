@@ -43,21 +43,28 @@ export const updateCount = (targetList: string[], plugin: FileExplorerNoteCount)
     for (const path of targetList) {
         getAllParents(path, set);
     }
+    
+    // Filter to only include INBOX folders and their parents
+    const inboxPaths = new Set<string>();
+    for (const path of set) {
+        const folder = plugin.app.vault.getAbstractFileByPath(path);
+        if (folder instanceof TFolder && folder.name === 'INBOX') {
+            inboxPaths.add(path);
+        }
+    }
+    
     // set count of path
     const { fileExplorer, fileFilter } = plugin;
     if (!fileExplorer) {
         console.error('fileExplorer missing');
         return;
     }
-    for (const path of set) {
+    for (const path of inboxPaths) {
         // check if path available
         if (!fileExplorer.fileItems[path]) continue;
         setCount(fileExplorer.fileItems[path] as FolderItem, fileFilter);
     }
-    // Update root separately
-    if (plugin.rootFolderEl && plugin.settings.addRootFolder) {
-        setupRootCount(plugin);
-    }
+    // Don't update root folder count since we only want INBOX
     // empty waitingList
     targetList.length = 0;
 };
@@ -74,19 +81,21 @@ const setupRootCount = (plugin: FileExplorerNoteCount) => {
 
 export const setupCount = (plugin: FileExplorerNoteCount, revert = false) => {
     if (!plugin.fileExplorer) throw new Error('fileExplorer not found');
-    // For each setup, first setup the root folder
-    plugin.setupRootFolder();
-    setupRootCount(plugin);
+    // Don't setup root folder count since we only want INBOX
     // Iterate other items and include new counts
     iterateItems(plugin.fileExplorer.fileItems, (item: AFItem) => {
         if (!isFolder(item)) return;
+        // Only process INBOX folders
+        if (!revert && item.file.name !== 'INBOX') return;
         if (revert) removeCount(item);
         else setCount(item, plugin.fileFilter);
     });
 };
 
 export const setCount = (item: FolderItem, filter: AbstractFileFilter) => {
-    // if (item.file.isRoot()) return;
+    // Only show count for folders named 'INBOX'
+    if (item.file.name !== 'INBOX') return;
+    
     const count = countFolderChildren(item.file, filter);
     item.selfEl.dataset['count'] = count.toString();
     item.selfEl.toggleClass(withSubfolderClass, Array.isArray(item.file.children) && item.file.children.some((af) => af instanceof TFolder));

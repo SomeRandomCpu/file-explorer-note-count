@@ -21,7 +21,15 @@ export class VaultHandler {
     handler = (...args: (string | TAbstractFile)[]) => {
         for (const arg of args) {
             const path = arg instanceof TAbstractFile ? arg.path : arg;
-            this.waitingList.push(getParentPath(path) ?? '/');
+            // Only add to waiting list if the change affects an INBOX folder
+            const folder = this.app.vault.getAbstractFileByPath(path);
+            const parentPath = getParentPath(path);
+            const parentFolder = parentPath ? this.app.vault.getAbstractFileByPath(parentPath) : null;
+            
+            // Check if the file/folder itself is INBOX or if its parent is INBOX
+            if ((folder && folder.name === 'INBOX') || (parentFolder && parentFolder.name === 'INBOX')) {
+                this.waitingList.push(path);
+            }
         }
         this.update();
     };

@@ -38,14 +38,10 @@ export default class FileExplorerNoteCount extends Plugin {
 
     initialize = (revert = false) => {
         let plugin = this;
-        // First Check if the root folder exists
-        let explorerHeaderEl = document.querySelector(`${this.explorerNavHeaderSelector} .${this.rootFolderClassName}`);
-        if (explorerHeaderEl) this.rootFolderEl = explorerHeaderEl;
 
         const getViewHandler = (revert: boolean) => (view: FileExplorer) => {
             this.fileExplorer = view;
             setupCount(this, revert);
-            this.setupRootFolder(revert);
             if (!revert) {
                 this.registerEvent(this.app.workspace.on('css-change', this.setupRootFolder));
                 this.vaultHandler.registerVaultEvent();
@@ -74,31 +70,8 @@ export default class FileExplorerNoteCount extends Plugin {
     };
 
     setupRootFolder = (revert = false) => {
-        if (!this.fileExplorer) {
-            console.error('file-explorer not found');
-            return;
-        }
-        if (this.rootFolderEl && !this.settings.addRootFolder) {
-            this.rootFolderEl.remove();
-            this.rootFolderEl = null;
-        }
-        // Check if root is provided by Obsidian (it shouldn't be in the new releases)
-        const root = this.fileExplorer?.fileItems?.['/'] ?? null;
-        if (!root) {
-            // Get the Nav Header
-            let explorerHeaderEl = document.querySelector(this.explorerNavHeaderSelector);
-            if (!explorerHeaderEl) return;
-            if (!this.rootFolderEl && this.settings.addRootFolder) {
-                this.rootFolderEl = explorerHeaderEl.createEl('div', {
-                    cls: ['tree-item', 'nav-folder', this.rootFolderClassName],
-                });
-                this.rootFolderEl.innerHTML = `
-                <div class="oz-explorer-root-nav-folder-title" data-path="/">
-                    <div class="tree-item-inner nav-folder-title-content">${this.app.vault.getName()}</div>
-                </div>
-                `;
-            }
-        }
+        // Root folder functionality disabled since we only want INBOX counts
+        return;
     };
 
     reloadCount() {

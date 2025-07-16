@@ -47,6 +47,12 @@ export class FENoteCountSettingTab extends PluginSettingTab {
         containerEl.createEl('h2', {
             text: 'File Explorer Note Count Settings',
         });
+        
+        // Add info about INBOX-only functionality
+        containerEl.createEl('p', {
+            text: 'This plugin now only shows file counts on folders named "INBOX".',
+            cls: 'setting-item-description'
+        });
 
         new Setting(containerEl)
             .setName('Show All Numbers')
@@ -56,20 +62,6 @@ export class FENoteCountSettingTab extends PluginSettingTab {
                     document.body.toggleClass('oz-show-all-num', value);
                     this.plugin.settings.showAllNumbers = value;
                     this.plugin.saveSettings();
-                })
-            );
-
-        new Setting(containerEl)
-            .setName('Add Root Folder')
-            .setDesc(
-                'By default, there is no root folder provided by Obsidian. It is moved to drop-down menu to switch between vaults. ' +
-                    'Enable this option if you want to see root folder and its count in the file explorer'
-            )
-            .addToggle((toggle) =>
-                toggle.setValue(this.plugin.settings.addRootFolder).onChange((value) => {
-                    this.plugin.settings.addRootFolder = value;
-                    this.plugin.saveSettings();
-                    this.plugin.reloadCount();
                 })
             );
 
