@@ -1,6 +1,6 @@
 {
     "name": "file-explorer-note-count",
-    "version": "1.2.3",
+    "version": "1.2.4",
     "description": "You can see the number of notes under each folder within the file explorer",
     "main": "main.js",
     "scripts": {
@@ -8,7 +8,7 @@
         "eslint": "eslint . --ext .ts,.tsx --fix",
         "dev": "rollup --config rollup.config.js -w",
         "release": "release-it",
-        "build": "NODE_ENV=production rollup --config rollup.config.js"
+        "build": "cross-env NODE_ENV=production rollup --config rollup.config.js"
     },
     "keywords": [],
     "author": "",
@@ -24,6 +24,7 @@
         "@typescript-eslint/eslint-plugin": "^4.23.0",
         "@typescript-eslint/parser": "^4.23.0",
         "assert-never": "^1.2.1",
+        "cross-env": "^10.0.0",
         "cz-conventional-changelog": "^3.3.0",
         "eslint": "^7.26.0",
         "eslint-config-prettier": "^8.3.0",
